@@ -1,0 +1,25 @@
+flaskDiplom
+├── .venv
+├── app.py
+├── models.py
+├── forms.py
+├── config.py
+├── requirements.txt
+├── migrations/
+│     ├── env.py
+│     ├── alembic.ini
+│     ├── script.py.mako
+│     └── versions/
+│         └── migration_name.py
+|
+├── templates/
+|     ├── home.html
+|     ├── register.html
+|     ├── login.html
+|     ├── photos.html
+|     └── users_list.html
+|
+├── uploads
+|
+├── instance
+|     └── db.sqlight3
