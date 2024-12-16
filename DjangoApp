@@ -3,7 +3,7 @@ djangoProject
  | reqs.txt
  | SocialNetwork
    |
-   | manage.py
+   +--- manage.py
    |
    +---SocialNetwork
    |    | __init__.py
@@ -37,5 +37,5 @@ djangoProject
    |    | upload_photo.html
    |    | users_list.html
    |
-   | db.sqlite3
+   +--- db.sqlite3
    
