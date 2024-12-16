@@ -1,0 +1,31 @@
+FastAPIDiplom
+  ├── .venv
+  |
+  ├── bookface
+  |     ├── __init.py__
+  │     ├── forms.py
+  │     ├── models.py
+  │     ├── main.py
+  │     ├── schemas.py
+  |     ├── crud.py
+  │     ├── templates/
+  |     |     ├── home.html
+  |     |     ├── register.html
+  |     |     ├── photos.html
+  |     |     ├── get_photo.html
+  |     |     └── users_list.html
+  |     |
+  |     ├── migrations/
+  │           ├── env.py
+  │           ├── README
+  │           ├── script.py.mako
+  │           └── versions/
+  │                 └── migration_name.py          
+  |
+  ├── uploads
+  |
+  ├── alembic.ini
+  |
+  ├── ecomerce.db
+  |
+  └── requirements.txt
