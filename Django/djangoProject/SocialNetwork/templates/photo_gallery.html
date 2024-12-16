@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Галерея фотографий</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Галерея фотографий</h1>
+    <a href="{% url 'upload_photo' %}">Загрузить фотографию</a>
+
+    <div class="photo-grid">  <!-- Добавляем класс для стилизации -->
+        {% for photo in photos %}
+            <figure class="photo-item">
+                <a href="{% url 'photo_detail' photo.id %}">
+                    <img src="{{ photo.image.url }}" alt="{{ photo.title }}" width="200">
+                </a>
+                <figcaption>{{ photo.title }}</figcaption>
+            </figure>
+        {% empty %}
+            <p>Фотографий пока нет.</p>
+        {% endfor %}
+    </div>
+
+    <footer>
+        <a href="{% url 'photo_gallery' %}">Вернуться в галерею</a><br>
+        <a href="{% url 'home' %}">Вернуться на главную страницу</a>
+    </footer>
+</body>
+</html>
