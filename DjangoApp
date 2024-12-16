@@ -1,1 +1,41 @@
-
+djangoProject
+ | .venv
+ | reqs.txt
+ | SocialNetwork
+   |
+   | manage.py
+   |
+   +---SocialNetwork
+   |    | __init__.py
+   |    | asgi.py
+   |    | settings.py
+   |    | urls.py
+   |    | wsgi.py
+   |
+   +---bookface
+   |    | __init__.py
+   |    | admin.py
+   |    | apps.py
+   |    | models.py
+   |    | tests.py
+   |    | views.py
+   |    +---migrations
+   |         | 0001_initial.py
+   |         | __init__.py
+   |
+   +---media
+   |     | photo
+   |
+   +---static
+   |     | style.css
+   |
+   +---templates
+   |    | home.html
+   |    | photo_detail.html
+   |    | photo_gallery.html
+   |    | register.html
+   |    | upload_photo.html
+   |    | users_list.html
+   |
+   | db.sqlite3
+   
