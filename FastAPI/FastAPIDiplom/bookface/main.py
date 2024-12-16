@@ -1,0 +1,130 @@
+from fastapi import FastAPI, Depends, HTTPException, Form, Request, status, File, UploadFile
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from bookface import models, crud, schemas, forms
+import os
+from fastapi.staticfiles import StaticFiles
+
+
+# Настройка базы данных и создание движка SQLAlchemy,
+# который используется для подключения и взаимодействия с базой данных
+DATABASE_URL = "sqlite:///ecomerce.db"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+models.Base.metadata.create_all(bind=engine)
+
+# Создаем экземпляр приложения FastAPI
+app = FastAPI()
+# Настройка шаблонизатора Jinja2
+templates = Jinja2Templates(directory="bookface/templates")
+
+# Директория для хранения загруженных файлов
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+
+# Получение текущей сессии
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# Главная страница
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("home.html", {"request": request})
+
+
+# Регистрация нового пользователя
+@app.get("/reg", response_class=HTMLResponse)
+async def register_form(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
+@app.post("/reg")
+async def register_user(request: Request, db: Session = Depends(get_db)):
+    form_data = await request.form()
+    user_data = forms.UserRegistrationForm(
+        username=form_data.get("username"),
+        first_name=form_data.get("first_name"),
+        last_name=form_data.get("last_name"),
+        email=form_data.get("email"),
+        phone_number=form_data.get("phone_number"),
+        birth_date=form_data.get("birth_date"),
+        password=form_data.get("password"),
+        confirm_password=form_data.get("confirm_password"),
+    )
+
+    user_data.check_passwords()
+
+    user = schemas.UserCreate(**user_data.dict())
+    crud.create_user(db, user)
+    return {"message": "User registered successfully"}
+
+
+# Список пользователей
+@app.get("/list", response_class=HTMLResponse)
+async def users_list(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+    users = crud.get_users(db)
+    return templates.TemplateResponse("users_list.html", {"request": request, "users": users})
+
+
+@app.get("/photos", response_class=HTMLResponse)
+async def view_photos(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+    photos = crud.get_photos(db)
+    # Временно передаем фиктивного пользователя
+    current_user = {"id": 1, "username": "test_user"}
+    return templates.TemplateResponse(
+        "photos.html",
+        {"request": request, "photos": photos, "current_user": current_user}
+    )
+
+
+@app.post("/photos")
+async def upload_photo(
+    db: Session = Depends(get_db),
+    user_id: int = Form(...),
+    file: UploadFile = File(...),
+    description: str = Form(None)
+):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    photo = schemas.PhotoCreate(filename=file.filename, description=description)
+    return crud.add_photo(db, photo, user_id=user_id)
+
+@app.post("/upload_photo")
+async def upload_photo(img: UploadFile, db: Session = Depends(get_db)):
+    file = os.path.join(UPLOAD_DIR, img.filename) # Путь для сохранения фотографий
+    with open(file, "wb") as f:
+        f.write(await img.read())
+
+    photo = models.Photo(filename=img.filename) # Создание экземпляра модели Photo из model
+    db.add(photo)
+    db.commit()
+    db.refresh(photo)
+    return {"photo_id": photo.id, "message": "Photo uploaded successfully"}
+
+
+@app.post("/photos/{photo_id}/comments")
+async def add_comment(
+    photo_id: int,
+    text: str = Form(...),  # Получаем текст комментария из формы
+    user_id: int = Form(...),  # ID пользователя также передаётся через форму
+    db: Session = Depends(get_db),
+):
+    comment_data = schemas.CommentCreate(text=text)
+    comment = crud.add_comment(db, comment_data, user_id=user_id, photo_id=photo_id)
+    return {"comment_id": comment.id, "message": "Comment added successfully"}
+
+
+
