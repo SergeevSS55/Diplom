@@ -159,6 +159,15 @@ Django позволяет легко настраивать маршруты (UR
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/4.2_models.png)
 (рис. 4.2) 
 
+Чтобы произвести миграцию, необходимо инициализировать Алембик с помощью команды: "flask db init". Данная команда создаст директорию migrations с файлами конфигурации и примерами миграций.
+Для создания первой миграции необходимо прописать в терминале: "flask db migrate -m "Initial database setup"". Эта команда создаст новый скрипт миграции в директории migrations/versions. Команда flask db upgrade применит все миграции, создав таблицы в базе данных. При внесении изменений в модель необходимо повторить команды migrate и update.
+
+![image](https://github.com/SergeevSS55/Diplom/blob/main/images/flask_DB%20(1).png)
+(рис. 4.3) 
+
+![image](https://github.com/SergeevSS55/Diplom/blob/main/images/flask_DB%20(2).png)
+(рис. 4.4) 
+
 Теперь можно создать несколько функций. Эти функции являются примером того как работают CRUD запросы в Flask (рис. 5).
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/5_1_func.png)
@@ -185,7 +194,7 @@ Django позволяет легко настраивать маршруты (UR
 
 (рис. 5.6)
 
-Так же “.route” это наше подключение на страницу, указанную в скобках. В “.route” указываем какой угодно путь. Дальше прописываем основную логику функции и возвращаем всё с помощью render_template или redirect для перенаправления. Конструкция if __name__ == '__main__': используется для защиты кода, который должен выполняться только при прямом запуске модуля, а не при его импорте в другой модуль. 
+Так же “.route” это наше подключение на страницу, указанную в скобках. В “.route” указываем какой угодно путь. Дальше прописываем основную логику функции и возвращаем всё с помощью render_template или redirect для перенаправления. Конструкция if __name__ == '__main__': используется для защиты кода, который должен выполняться только при прямом запуске модуля, а не при его импорте в другой модуль. Для запуска приложения Flusk необходимо ввести команду "python app.py".
 
 ### **Разработка на FastAPI**
 Перед началом работы с FastAPI нужно его установить. Сначала также устанавливаем FastAPI “pip install fastapi” и создаём директорию с файлом
@@ -200,6 +209,21 @@ Django позволяет легко настраивать маршруты (UR
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/7_models.png)
 
 (рис. 7)
+
+По традиции при затрагивании темы моделей опишем создание миграций. Создание миграций в FastAPI аналогично Flask. Основным отличием являются команды в командной строке. Как и во Flask-е инструментом для управления миграциями является Alembic. Необходимо перейти в корневую директорию проекта и выполнить команду: "alembic init alembic"
+Далее появляется файл alembic.ini, который необходимо настроить. Для этого в строке sqlalchemy.url необходимо указать название нашей базы данных (например, sqlalchemy.url = sqlite:///ecomerce.db).
+После этого настраиваем файл env.py, находящийся в директории migrations. Найти строку target_metadata = None и замените её на target_metadata = Base.metadata, но при этом необходимо импортировать модели из файла models.py.
+Для создания первой миграции в корневой директории проекта необходимо выполнить команду: alembic revision -m "Initial migration". Эта команда создаст новый скрипт миграции в директории alembic/versions.
+Чтобы применить миграцию и создать таблицы в БД прописывается команда: alembic upgrade head.
+Если вносятся изменения в моделях необходимо повторить команды alembic revision -m "Иное название" и "alembic upgrade head".
+
+![image](https://github.com/SergeevSS55/Diplom/blob/main/images/FastAPI_DB%20(1).png)
+
+(рис. 7.1)
+
+![image](https://github.com/SergeevSS55/Diplom/blob/main/images/FastAPI_DB%20(2).png)
+
+(рис. 7.2)
 
 Далее прописываем основные функции сайта с помощью FastAPI(рис. 8).
 
@@ -238,11 +262,11 @@ Schemas.py (рис. 9)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/9_schemas%20(1).png)
 
-(рис. 9)
+(рис. 9.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/9_schemas%20(2).png)
 
-(рис. 9)
+(рис. 9.2)
 
 Модуль Forms.py, который не является обязательным компонентом, однако он помогает при обработке данных из HTML-форм. (рис. 10)
 
@@ -254,13 +278,15 @@ Schemas.py (рис. 9)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/11_CRUD%20(1).png)
 
-(рис. 11)
+(рис. 11.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/11_CRUD%20(2).png)
 
-(рис. 11)
+(рис. 11.2)
 
 И таким образом models.py определяет модели базы данных. Schemas.py описывает структуру данных, передаваемых между API и клиентами, используется для валидации и сериализации данных. Crud.py использует модели из models.py для доступа к базе данных и использует Pydantic модели из schemas.py для обработки и возврата данных. Forms.py обычно используется для валидации данных, отправленных через HTML-формы и может использоваться для того, чтобы создать Pydantic модель, которая потом используется в crud.py.
+
+Для запуска с помощью Uvicorn можно использовать следующую команду: "uvicorn bookface.main:app". 
 
 ### **Разработка на Django**
 
@@ -279,15 +305,15 @@ Schemas.py (рис. 9)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_models.png)
 
-(рис. 13)
+(рис. 13.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_models%20(2).png)
 
-(рис. 13)
+(рис. 13.2)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_models%20(3).png)
 
-(рис. 13)
+(рис. 13.3)
 
 Чтобы инициализировать базу данных в нашем проекте, необходимо ввести в терминале Python manage.py migrate. На данном этапе Django создает технические таблицы. Чтобы создать запрос на отправку созданных нами моделей, вводим команду Python manage.py makemigrations. Не забываем, что каждая созданная модель соответствует своей таблице. Завершающим этапом добавления наших моделей в базу данных – дублирование команды migrate.
 После добавления моделей в базу данных, можно добавлять данные.
@@ -295,47 +321,47 @@ Schemas.py (рис. 9)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_DB%20(1).png)
 
-(рис. 14)
+(рис. 14.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_DB%20(2).png)
 
-(рис. 14)
+(рис. 14.2)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_DB%20(3).png)
 
-(рис. 14)
+(рис. 14.3)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_DB%20(4).png)
 
-(рис. 14)
+(рис. 14.4)
 
 Модуль views.py в Django — это «сердце» веб-приложения, где обрабатываются запросы пользователей и генерируются ответы. Он отвечает за логику работы с данными, взаимодействие с моделями, шаблонами и другими частями приложения. Views.py связывает URL-адреса (которые определяются в urls.py) с определенными действиями, которые должны выполняться при переходе по этим адресам. (рис. 15).
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_views%20(1).png)
 
-(рис. 15)
+(рис. 15.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_views%20(2).png)
 
-(рис. 15)
+(рис. 15.2)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_views%20(3).png)
 
-(рис. 15)
+(рис. 15.3)
 
 Файл forms.py играет важную роль в управлении формами веб-приложения. Он служит централизованным местом для определения, настройки и обработки форм. Данный файл используется для создания классов форм (django.forms.Form или django.forms.ModelForm).  В каждом из классов имеется структура, содержащая в себе настраиваемые поля,а также какие виджеты используются для отображения. Кроме того, для каждого поля указывается валидация. (рис. 16)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_forms%20(1).png)
 
-(рис. 16)
+(рис. 16.1)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_forms%20(2).png)
 
-(рис. 16)
+(рис. 16.2)
 
 ![image](https://github.com/SergeevSS55/Diplom/blob/main/images/dj_forms%20(3).png)
 
-(рис. 16)
+(рис. 16.3)
 
 Модуль urls.py в Django — это место, где определяется сопоставление между URL-адресами (путями в адресной строке) и представлениями (функциями или классами, которые обрабатывают запросы). Он является ключевым компонентом Django для маршрутизации запросов пользователей.
 Необходимо импортировать функции-представления из модуля views.py и в функцию path() передать импортированные функции, шаблон URL-адреса и имя маршрута. (рис. 17).
