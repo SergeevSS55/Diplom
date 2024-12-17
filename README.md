@@ -479,7 +479,7 @@ djangoProject
  └── db.sqlite3
 
 ## Приложение 2. Список необходимых библиотек
-### **Flusk**
+### **Flаsk**
 ﻿alembic==1.14.0
 blinker==1.9.0
 click==8.1.7
